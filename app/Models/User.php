@@ -10,7 +10,7 @@ use Filament\Panel;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -27,10 +27,11 @@ class User extends Authenticatable
         'is_admin',
     ];
 
+
+
         public function canAccessPanel(Panel $panel): bool
     {
-        // Solo los usuarios con la columna is_admin = true podrán acceder.
-        return $this->is_admin;
+        return str_ends_with($this->email, '@sgc.gov.co') && $this->hasVerifiedEmail();
     }
 
     /**
