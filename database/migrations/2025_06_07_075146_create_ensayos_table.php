@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('ensayos', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo')->unique();
+            $table->string('codigo');
             $table->text('descripcion');
             $table->string('documento');
-            $table->string('soporte');
+            $table->string('soporte')->nullable();
             $table->decimal('valor', 10, 2);
             $table->foreignId('laboratorio_id')->constrained('laboratorios');
             $table->foreignId('clase_ensayo_id')->constrained('clase_ensayos');

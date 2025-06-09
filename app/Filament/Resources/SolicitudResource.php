@@ -52,12 +52,10 @@ public static function form(Form $form): Form
                                 ])
                                 ->required()
                                 ->inline()
-                                ->live(), // <-- Sigue siendo crucial para la lógica condicional
-
+                                ->live(),
                             DatePicker::make('fecha_solicitud')
                                 ->default(now())
                                 ->required(),
-
                             Select::make('estado_id')
                                 ->relationship('estado', 'nombre')
                                 ->label('Estado de la Solicitud')
@@ -65,60 +63,49 @@ public static function form(Form $form): Form
                                 ->disabled(fn (string $operation): bool => $operation === 'create')
                                 ->dehydrated()
                                 ->required(),
-
                             TextInput::make('referencia')
                                 ->required()
-                                ->maxLength(16),
-                        ])->columns(2),
-
-                        // Sección con los datos del paso 2 original
-                        Section::make('Origen y Ubicación')->schema([
-                            TextInput::make('entidad')->required(),
-                            TextInput::make('direccion_ciudad')->label('Dirección / Ciudad')->required(),
-                        ])->columns(2),
-
-                        // La sección condicional se mantiene igual y funcionará perfectamente
-                        Section::make('Detalles Internos')
-                            ->description('Esta sección solo aplica para solicitudes internas.')
-                            ->visible(fn (Get $get): bool => $get('tipo_solicitud') === 'interna')
-                            ->schema([
-                                Select::make('direccion_tecnica_id')
-                                    ->relationship('direccionTecnica', 'nombre')
-                                    ->label('Dirección Técnica'),
-
-                                Select::make('grupo_trabajo_id')
-                                    ->relationship('grupoTrabajo', 'nombre')
-                                    ->label('Grupo de Trabajo'),
-
-                                Select::make('proyecto_id')
-                                    ->relationship('proyecto', 'nombre')
-                                    ->label('Proyecto'),
-                            ])->columns(3),
-                    ]),
-
-                // Los pasos 3 y 4 originales ahora son los pasos 2 y 3
-                Wizard\Step::make('Contactos')
-                    ->description('Personas responsables de la solicitud.')
-                    ->icon('heroicon-o-users')
-                    ->schema([
-                        Grid::make(2)->schema([
-                            Section::make('Contacto 1: Reporte de Resultados')
-                                ->schema([
-                                    TextInput::make('contacto_1_nombre')->required(),
-                                    TextInput::make('contacto_1_email')->email()->required(),
-                                    TextInput::make('contacto_1_extension')->label('Telefono / Extensión'),
-                                ]),
-                            Section::make('Contacto 2: Entrega de Muestras')
-                                ->schema([
-                                    TextInput::make('contacto_2_nombre')->required(),
-                                    TextInput::make('contacto_2_email')->email()->required(),
-                                    TextInput::make('contacto_2_extension')->label('Telefono / Extensión'),
-                                ]),
-                        ])
+                                ->label('Referencia')
+                                ->maxLength(64)
+                                ->unique(ignoreRecord: true)
+                                ->columnSpan(2),
+                        ])->columns(5),
+                        Section::make('Origen y Ubicación')
+                        ->visible(fn (Get $get): bool => $get('tipo_solicitud') === 'Interna')
+                        ->schema([
+                            TextInput::make('entidad')
+                                ->required(),
+                            TextInput::make('direccion_ciudad')
+                                ->label('Dirección / Ciudad')
+                                ->required(),
+                            Select::make('direccion_tecnica_id')
+                                ->relationship('direccionTecnica', 'nombre')
+                                ->label('Dirección Técnica'),
+                            Select::make('grupo_trabajo_id')
+                                ->relationship('grupoTrabajo', 'nombre')
+                                ->label('Grupo de Trabajo'),
+                            Select::make('proyecto_id')
+                                ->relationship('proyecto', 'nombre')
+                                ->label('Proyecto'),
+                                ])
+                            ->columns(3),
+                        Section::make('Origen y Ubicación')
+                        ->visible(fn (Get $get): bool => $get('tipo_solicitud') === 'Externa')
+                        ->schema([
+                            TextInput::make('entidad')
+                                ->label('Entidad Solicitante')
+                                ->required(),
+                            TextInput::make('direccion_ciudad')
+                                ->label('Dirección - Ciudad de Origen')
+                                ->columnSpanFull()
+                                ->required(),
+                                ])
+                            ->columns(3)
                     ]),
 
                 Wizard\Step::make('Detalle del Servicio')
                     ->description('Ensayos, muestras y requerimientos específicos.')
+                    ->columns(3)
                     ->icon('heroicon-o-beaker')
                     ->schema([
                         Select::make('ensayos')
@@ -126,18 +113,59 @@ public static function form(Form $form): Form
                             ->multiple()
                             ->preload()
                             ->searchable()
+                            ->columnSpanFull()
+                            ->label('Ensayos Solicitados')
                             ->label('Ensayos o Actividades Solicitadas'),
-
-                        RichEditor::make('requisitos_especiales')->columnSpanFull(),
-
-                        TextInput::make('cantidad_muestras_proyectadas')->numeric()->required(),
-
+                        RichEditor::make('requisitos_especiales')
+                            ->columnSpanFull(),
+                        TextInput::make('cantidad_muestras_proyectadas')
+                            ->numeric()
+                            ->label('Cantidad de Muestras Proyectadas')
+                            ->columns(1)
+                            ->required(),
                         FileUpload::make('soporte')
                             ->disk('public')
+                            ->label('Soporte de Solicitud')
+                            ->helperText('Adjuntar documentos relevantes para la solicitud.')
+                            ->acceptedFileTypes(['application/pdf', 'image/*'])
+                            ->columnSpanFull()
                             ->directory('soportes-solicitudes')
                             ->openable()
                             ->preserveFilenames(),
                     ]),
+
+                Wizard\Step::make('Contactos')
+                    ->description('Personas responsables de la solicitud.')
+                    ->icon('heroicon-o-users')
+                    ->schema([
+                        Grid::make(2)->schema([
+                            Section::make('Contacto 1: Reporte de Resultados')
+                                ->schema([
+                                    Grid::make(2)->schema([
+                                        TextInput::make('contacto_1_nombre')->label('Nombre')->required(),
+                                        TextInput::make('contacto_1_extension')->label('Teléfono / Extensión'),
+                                    ]),
+                                    TextInput::make('contacto_1_email')
+                                        ->label('Correo Electrónico')
+                                        ->email()
+                                        ->required(),
+                                ]),
+
+                            Section::make('Contacto 2: Entrega de Muestras')
+                                ->schema([
+                                    Grid::make(2)->schema([
+                                        TextInput::make('contacto_2_nombre')->label('Nombre')->required(),
+                                        TextInput::make('contacto_2_extension')->label('Teléfono / Extensión'),
+                                    ]),
+                                    TextInput::make('contacto_2_email')
+                                        ->label('Correo Electrónico')
+                                        ->email()
+                                        ->required(),
+                                ]),
+                        ])
+                    ]),
+
+
             ])->columnSpanFull(),
         ]);
 }
@@ -156,19 +184,10 @@ public static function form(Form $form): Form
                 Tables\Columns\TextColumn::make('estado.nombre')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('direcciontecnica.nombre')
-                    ->label('Dirección Técnica')
+                Tables\Columns\TextColumn::make('entidad')
+                    ->label('Entidad Solicitante')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('grupotrabajo.nombre')
-                    ->label('Grupo de Trabajo')
-                    ->numeric()
-                    ->sortable(),
-//                Tables\Columns\TextColumn::make('proyecto.nombre')
-//                    ->label('Proyecto')
-//                    ->numeric()
-//                    ->sortable(),
-
                 Tables\Columns\TextColumn::make('cantidad_muestras_proyectadas')
                     ->numeric()
                     ->label('Muestras Proyectadas')
