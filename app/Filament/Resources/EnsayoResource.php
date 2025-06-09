@@ -18,11 +18,11 @@ class EnsayoResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-check-badge';
 
         protected static ?string $cluster = ParametrosGenerales::class;
-        protected static ?string    $navigationLabel = 'Ensayos-Actividades';
+        protected static ?string    $navigationLabel = 'Portafolio de Servicios';
         protected static ?string    $navigationGroup = 'Parametros';
         protected static ?string    $navigationParentItem = 'Parametros Generales';
-        protected static ?string    $pluralModelLabel = 'Ensayos-Actividades';
-        protected static ?string    $slug = '/EnsayosActividade';
+        protected static ?string    $pluralModelLabel = 'Portafolio de Servicios';
+        protected static ?string    $slug = '/PortafolioServicios';
 
     public static function form(Form $form): Form
     {
@@ -70,9 +70,7 @@ class EnsayoResource extends Resource
                 Tables\Columns\TextColumn::make('laboratorio.nombre')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('claseEnsayo.nombre')
-                    ->numeric()
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
