@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 class Solicitud extends Model
@@ -43,6 +44,9 @@ class Solicitud extends Model
         return $this->belongsToMany(Ensayo::class, 'ensayo_solicitud');
     }
 
-
+    public function muestras(): HasMany
+    {
+        return $this->hasMany(Muestra::class);
+    }
 
 }

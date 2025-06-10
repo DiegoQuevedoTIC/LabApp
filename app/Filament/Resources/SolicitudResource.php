@@ -216,7 +216,7 @@ public static function form(Form $form): Form
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\MuestrasRelationManager::class,
         ];
     }
 
