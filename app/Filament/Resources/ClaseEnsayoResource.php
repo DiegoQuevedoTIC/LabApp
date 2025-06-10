@@ -18,11 +18,11 @@ class ClaseEnsayoResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
         protected static ?string $cluster = ParametrosGenerales::class;
-        protected static ?string    $navigationLabel = 'Clase de Ensayo-Actividad';
+        protected static ?string    $navigationLabel = 'Clase de Ensayo';
         protected static ?string    $navigationGroup = 'Parametros';
         protected static ?string    $navigationParentItem = 'Parametros Generales';
-        protected static ?string    $pluralModelLabel = 'Clases de Ensayos/Actividades';
-        protected static ?string    $slug = '/ClasesEnsayosActividades';
+        protected static ?string    $pluralModelLabel = 'Clases de Ensayo';
+        protected static ?string    $slug = '/ClasesEnsayo';
 
 
     public static function form(Form $form): Form
@@ -66,7 +66,6 @@ class ClaseEnsayoResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

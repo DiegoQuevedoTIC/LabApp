@@ -9,4 +9,10 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateEstado extends CreateRecord
 {
     protected static string $resource = EstadoResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
+
 }

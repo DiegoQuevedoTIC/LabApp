@@ -9,4 +9,10 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateEnsayo extends CreateRecord
 {
     protected static string $resource = EnsayoResource::class;
+
+            protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
+    }
+
 }

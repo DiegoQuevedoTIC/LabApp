@@ -13,7 +13,11 @@ class EditEstado extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
         ];
+    }
+
+            protected function getRedirectUrl(): string
+    {
+        return static::getResource()::getUrl('index');
     }
 }

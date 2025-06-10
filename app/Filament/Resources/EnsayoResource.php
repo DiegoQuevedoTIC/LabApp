@@ -48,6 +48,8 @@ class EnsayoResource extends Resource
                     ->preserveFilenames(),
                 Forms\Components\TextInput::make('valor')
                     ->required()
+                    ->prefix('COP')
+                    ->prefixIcon('heroicon-o-currency-dollar')
                     ->numeric(),
                 Forms\Components\Select::make('laboratorio_id')
                     ->relationship('laboratorio', 'nombre')
@@ -62,14 +64,17 @@ class EnsayoResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('codigo')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('documento')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('valor')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('laboratorio.nombre')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('valor')
+                    ->numeric(decimalPlaces: 0)
+                    ->money('COL', locale: 'es_CO')
+                    ->alignCenter()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('descripcion')
+                    ->limit(50)
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -88,7 +93,6 @@ class EnsayoResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
