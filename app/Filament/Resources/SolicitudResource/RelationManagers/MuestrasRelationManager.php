@@ -18,6 +18,8 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use App\Exports\MuestraProformaExport;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MuestrasRelationManager extends RelationManager
@@ -34,6 +36,7 @@ return $form
                 ->label('Código Consecutivo')
                 ->required()
                 ->maxLength(255),
+
             TextInput::make('consecutivo')
                 ->numeric()
                 ->label('Consecutivo Interno')

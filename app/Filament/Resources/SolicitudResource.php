@@ -15,10 +15,13 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Select; // <-- Importante: Añadir Section
+use Filament\Forms\Components\View;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\FileUpload;
+use Illuminate\Database\Eloquent\Model;
 use App\Models\Estado;
 use Filament\Forms\Get;
 
@@ -36,13 +39,47 @@ public static function form(Form $form): Form
 {
     return $form
         ->schema([
+            Section::make('Identificador único, fecha inicial y estado actual de la solicitud.')
+                ->icon('heroicon-o-bookmark-square')
+                ->schema([
+                    Grid::make(5)->schema([
+                            TextInput::make('id_solicitud')
+                                ->disabled()
+                                ->prefixIcon('heroicon-o-finger-print')
+                                ->prefix('SOL-')
+                                ->prefixIconColor('success')
+                                ->required()
+                                ->hint('ID de Solicitud')
+                                ->hintColor('primary')
+                                ->label(' ')
+                                ->disabled(fn (string $operation): bool => $operation === 'create' OR $operation === 'edit')
+                                ->helperText('ID Unico de Solicitud. Permite identificacion inequivoca.'),
+                            Select::make('estado_id')
+                                ->relationship('estado', 'nombre')
+                                ->columnSpan(2)
+                                ->hint('Estado de la Solicitud')
+                                ->hintColor('primary')
+                                ->default(fn () => Estado::where('nombre', 'Solicitada')->first()?->id)
+                                ->disabled(fn (string $operation): bool => $operation === 'create' OR $operation === 'edit')
+                                ->required()
+                                ->label(' ')
+                                ->helperText('Estado actual de la solictud.'),
+                            DatePicker::make('fecha_solicitud')
+                                ->default(now())
+                                ->required()
+                                ->hint('Fecha de Solicitud')
+                                ->hintColor('primary')
+                                ->columnSpan(2)
+                                ->disabled(fn (string $operation): bool =>  $operation === 'edit')
+                                ->label(' ')
+                                ->helperText('Fecha en que se registra el inicio de  la solicitud.'),
+                    ])
+                ]),
             Wizard::make([
-                // --- PASO 1 y 2 FUSIONADOS AQUÍ ---
                 Wizard\Step::make('Datos Generales y Procedencia')
                     ->description('Información principal y origen de la solicitud.')
                     ->icon('heroicon-o-clipboard-document-list')
                     ->schema([
-                        // Sección con los datos del paso 1 original
                         Section::make('Información de la Solicitud')->schema([
                             ToggleButtons::make('tipo_solicitud')
                                 ->label('Tipo de Solicitud')
@@ -53,16 +90,6 @@ public static function form(Form $form): Form
                                 ->required()
                                 ->inline()
                                 ->live(),
-                            DatePicker::make('fecha_solicitud')
-                                ->default(now())
-                                ->required(),
-                            Select::make('estado_id')
-                                ->relationship('estado', 'nombre')
-                                ->label('Estado de la Solicitud')
-                                ->default(fn () => Estado::where('nombre', 'Solicitada')->first()?->id)
-                                ->disabled(fn (string $operation): bool => $operation === 'create')
-                                ->dehydrated()
-                                ->required(),
                             TextInput::make('referencia')
                                 ->required()
                                 ->label('Referencia')
@@ -73,11 +100,6 @@ public static function form(Form $form): Form
                         Section::make('Origen y Ubicación')
                         ->visible(fn (Get $get): bool => $get('tipo_solicitud') === 'Interna')
                         ->schema([
-                            TextInput::make('entidad')
-                                ->required(),
-                            TextInput::make('direccion_ciudad')
-                                ->label('Dirección / Ciudad')
-                                ->required(),
                             Select::make('direccion_tecnica_id')
                                 ->relationship('direccionTecnica', 'nombre')
                                 ->label('Dirección Técnica'),
@@ -133,7 +155,6 @@ public static function form(Form $form): Form
                             ->openable()
                             ->preserveFilenames(),
                     ]),
-
                 Wizard\Step::make('Contactos')
                     ->description('Personas responsables de la solicitud.')
                     ->icon('heroicon-o-users')
@@ -142,30 +163,36 @@ public static function form(Form $form): Form
                             Section::make('Contacto 1: Reporte de Resultados')
                                 ->schema([
                                     Grid::make(2)->schema([
-                                        TextInput::make('contacto_1_nombre')->label('Nombre')->required(),
-                                        TextInput::make('contacto_1_extension')->label('Teléfono / Extensión'),
+                                        TextInput::make('contacto_1_nombre')->label('Nombre')->required()->columnSpan(2),
+                                        TextInput::make('contacto_1_extension')
+                                            ->columnSpan(1)
+                                            ->label('Teléfono / Extensión'),
                                     ]),
                                     TextInput::make('contacto_1_email')
                                         ->label('Correo Electrónico')
                                         ->email()
+                                        ->columnSpan(2)
                                         ->required(),
                                 ]),
-
                             Section::make('Contacto 2: Entrega de Muestras')
                                 ->schema([
-                                    Grid::make(2)->schema([
-                                        TextInput::make('contacto_2_nombre')->label('Nombre')->required(),
-                                        TextInput::make('contacto_2_extension')->label('Teléfono / Extensión'),
+                                    Grid::make(5)->schema([
+                                        TextInput::make('contacto_2_nombre')
+                                            ->label('Nombre')
+                                            ->columnSpan(2)
+                                            ->required(),
+                                        TextInput::make('contacto_2_extension')
+                                        ->label('Teléfono / Extensión')
+                                        ->columnSpan(1),
                                     ]),
                                     TextInput::make('contacto_2_email')
                                         ->label('Correo Electrónico')
+                                        ->columnSpan(2)
                                         ->email()
                                         ->required(),
                                 ]),
                         ])
                     ]),
-
-
             ])->columnSpanFull(),
         ]);
 }
