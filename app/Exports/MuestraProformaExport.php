@@ -29,13 +29,13 @@ class MuestraProformaExport implements FromCollection, WithHeadings, WithEvents,
     {
 
         return [
-            'ID Referencia en Campo',
-            'Tipo de Muestra',
+            'ID en Campo',
+            'Tipo Muestra',
             'Localización Geográfica',
-            'Descripción Preliminar de la Muestra',
-            'Origen de la Muestra',
+            'Descripción Muestra',
+            'Origen de Muestra',
             'Observaciones Generales',
-            'pH (ej: 7.5)',
+            'pH ',
             'Temperatura (°C)',
             'Conductividad (μS/cm)',
             'Alcalinidad (mg/L)',
@@ -64,21 +64,21 @@ class MuestraProformaExport implements FromCollection, WithHeadings, WithEvents,
     public function columnWidths(): array
     {
         return [
-            'A' => 22,
-            'B' => 15,
+            'A' => 12,
+            'B' => 12,
             'C' => 22,
-            'D' => 34,
+            'D' => 22,
             'E' => 19,
             'F' => 24,
-            'G' => 10,
+            'G' => 7,
             'H' => 16,
             'I' => 21,
             'J' => 17,
             'K' => 17,
             'L' => 17,
-            'M' => 17,
-            'N' => 19,
-            'O' => 20,
+            'M' => 16,
+            'N' => 18,
+            'O' => 18,
         ];
     }
 
@@ -91,7 +91,7 @@ class MuestraProformaExport implements FromCollection, WithHeadings, WithEvents,
 
                 $comments = [
                     'A1' => 'ID único para referencia en campo',
-                    'B1' => 'Valores esperados: Agua, Suelo, Roca',
+                    'B1' => 'Valores esperados: Agua, Suelo, Roca ...',
                     'C1' => 'Descripción de la ubicación geográfica',
                     'D1' => 'Descripción preliminar de la muestra',
                     'E1' => 'Origen de la muestra (ej: río, lago, etc.)',
