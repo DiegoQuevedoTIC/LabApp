@@ -41,13 +41,13 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('3rem')
             ->favicon(asset('images/Icons.png'))
             ->colors([
-                'danger' => Color::Rose,
-                'gray' => Color::Gray,
-                'info' => Color::Blue,
-                'primary' => Color::Emerald,
-                'success' => Color::Red,
-                'warning' => Color::Orange,
-                'secondary' => Color::Cyan,
+                'primary' => Color::Teal,         // Verde institucional, para acciones clave
+                'secondary' => Color::Slate,      // Gris oscuro, elegante como neutral de soporte
+                'info' => Color::Indigo,          // Azul profundo, para información relevante
+                'success' => Color::Green,        // Verde más claro, usado en confirmaciones
+                'warning' => Color::Amber,        // Amarillo para advertencias suaves
+                'danger' => Color::Rose,          // Rojo para errores
+                'gray' => Color::Zinc,            // Gris claro para UI general y fondos
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

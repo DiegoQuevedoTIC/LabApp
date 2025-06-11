@@ -11,9 +11,14 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
-
+use App\Filament\Imports\MuestraImporter;
+use Filament\Tables\Actions\ImportAction;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\CreateAction;
+use App\Exports\MuestraProformaExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MuestrasRelationManager extends RelationManager
 {
@@ -99,6 +104,10 @@ return $form
 
 }
 
+
+
+
+
     public function table(Table $table): Table
     {
         return $table
@@ -123,9 +132,26 @@ return $form
             ->filters([
                 //
             ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make(),
-            ])
+        ->headerActions([
+            CreateAction::make(),
+            ActionGroup::make([
+            Action::make('descargar_proforma')
+                ->label('Descargar Proforma')
+                ->icon('heroicon-o-document-arrow-down')
+                ->action(fn () => Excel::download(new MuestraProformaExport, 'proforma_muestras.xlsx')),
+            ImportAction::make()
+                ->label('Cargar Archivo')
+                ->importer(MuestraImporter::class)
+                ->color('primary')
+                ->options(['solicitud_id' => $this->ownerRecord->id]),
+        ])
+        ->label('Importación Masiva')
+        ->icon('heroicon-o-arrow-up-tray')
+        ->color('secondary')
+        ->button(),
+        ])
+
+
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
