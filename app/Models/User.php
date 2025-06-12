@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Filament\Models\Contracts\FilamentUser;
+use Spatie\Permission\Traits\HasRoles;
 use Filament\Panel;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,9 +29,17 @@ class User extends Authenticatable implements FilamentUser
 
 
 
-        public function canAccessPanel(Panel $panel): bool
+    public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->email, '@sgc.gov.co');
+        if ($panel->getId() === 'admin') {
+            return $this->hasRole('Admin'); // El usuario con rol 'Admin' accede al panel de administración
+        }
+
+        if ($panel->getId() === 'operaciones') {
+            return $this->hasRole('Operador'); // El usuario con rol 'Operador' accede al nuevo panel
+        }
+
+        return false;
     }
 
     /**
