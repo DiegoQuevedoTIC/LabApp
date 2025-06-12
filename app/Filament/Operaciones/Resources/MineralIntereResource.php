@@ -2,9 +2,10 @@
 
 namespace App\Filament\Operaciones\Resources;
 
-use App\Filament\Operaciones\Resources\PetrografiaMetalogeniaResource\Pages;
-use App\Filament\Operaciones\Resources\PetrografiaMetalogeniaResource\RelationManagers;
-use App\Models\PetrografiaMetalogenia;
+use App\Filament\Clusters\ParametrosGeneralesExplora;
+use App\Filament\Operaciones\Resources\MineralIntereResource\Pages;
+use App\Filament\Operaciones\Resources\MineralIntereResource\RelationManagers;
+use App\Models\MineralInteres;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,14 +14,18 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PetrografiaMetalogeniaResource extends Resource
+class MineralIntereResource extends Resource
 {
-    protected static ?string $model = PetrografiaMetalogeniaResource::class;
+    protected static ?string $model = MineralInteres::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+         protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-
-
+        protected static ?string $cluster = ParametrosGeneralesExplora::class;
+        protected static ?string    $navigationLabel = 'Mineral de Interés';
+        protected static ?string    $navigationGroup = 'Parametros';
+        protected static ?string    $navigationParentItem = 'Parametros Generales';
+        protected static ?string    $pluralModelLabel = 'Minerales de Interés';
+        protected static ?string    $slug = '/MineralInteres';
 
     public static function form(Form $form): Form
     {
@@ -59,9 +64,9 @@ class PetrografiaMetalogeniaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPetrografiaMetalogenias::route('/'),
-            'create' => Pages\CreatePetrografiaMetalogenia::route('/create'),
-            'edit' => Pages\EditPetrografiaMetalogenia::route('/{record}/edit'),
+            'index' => Pages\ListMineralInteres::route('/'),
+            'create' => Pages\CreateMineralIntere::route('/create'),
+            'edit' => Pages\EditMineralIntere::route('/{record}/edit'),
         ];
     }
 }

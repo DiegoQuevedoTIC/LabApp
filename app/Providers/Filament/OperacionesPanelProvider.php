@@ -54,6 +54,7 @@ class OperacionesPanelProvider extends PanelProvider
                 Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Operaciones/Widgets'), for: 'App\\Filament\\Operaciones\\Widgets')
+            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->widgets([
                 Widgets\AccountWidget::class,
             ])
