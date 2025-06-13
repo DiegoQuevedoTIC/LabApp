@@ -39,6 +39,7 @@ return new class extends Migration
         $table->boolean('criterio_1')->default(false);
         $table->boolean('criterio_2')->default(false);
         $table->boolean('criterio_3')->default(false);
+        $table->boolean('criterio_4')->default(false);
             $table->timestamps();
         });
     }

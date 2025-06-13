@@ -18,6 +18,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use App\Exports\MuestraProformaExport;
+use App\Models\Solicitud;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,39 +32,49 @@ class MuestrasRelationManager extends RelationManager
 
 return $form
     ->schema([
-        Grid::make(3)->schema([
             TextInput::make('codigo_consecutivo')
                 ->label('Código Consecutivo')
                 ->required()
-                ->maxLength(255),
-
+                ->maxLength(255)
+                ->default(1)
+                ->hidden(),
             TextInput::make('consecutivo')
                 ->numeric()
                 ->label('Consecutivo Interno')
-                ->required(),
+                ->required()
+                ->default(1)
+                ->hidden(),
             TextInput::make('referencia_campo')
+            ->required()
+            ->maxLength(30)
+            ->extraInputAttributes(['style' => 'text-align: center;  background-color: teal; color: white; font-weight: bold;'])
+            ->prefixIcon('heroicon-o-key')
+            ->prefixIconColor('success')
+            ->placeholder('Ingrese Cod. Referencia de Campo')
+            ->helperText('Identificacion Unica de la muestra en campo.')
+            ->validationMessages([
+                'required' => 'Ingresa el mail del contacto para la gestion de la solicitud.',
+                            'max' => 'La referencia de campo no puede exceder los 30 caracteres.',
+                             ])
                 ->label('Referencia de Campo'),
-        ]),
-
         Select::make('tipo_muestra_id')
             ->label('Tipo de Muestra')
             ->relationship('tipoMuestra', 'nombre')
             ->required()
             ->searchable()
+            ->reactive()
+            ->live()
             ->preload(),
-
-        Grid::make(2)->schema([
             TextInput::make('localizacion_geografica')
                 ->label('Localización Geográfica'),
             TextInput::make('descripcion_preliminar')
+                ->columnSpanFull()
                 ->label('Descripción Preliminar'),
-            TextInput::make('origen')
-                ->label('Origen'),
             Textarea::make('observaciones')
                 ->label('Observaciones')
                 ->rows(3)
                 ->columnSpanFull(),
-        ]),
+
 
         Grid::make(4)->schema([
             TextInput::make('ph')
@@ -83,8 +94,15 @@ return $form
                 ->numeric()
                 ->step(0.01),
         ]),
-
-        Grid::make(2)->schema([
+        Grid::make(3)->schema([
+            Select::make('origen')
+                ->options([
+                    'UGS84' => 'UGS84',
+                    'bogota' => 'Origen Bogota',
+                    'uniconacional' => 'Origen Unico Nacional',
+                    'geograficas' => 'Geograficas',
+                ])
+                ->label('Origen'),
             TextInput::make('norte')
                 ->label('Coordenada Norte')
                 ->numeric()
@@ -94,7 +112,6 @@ return $form
                 ->numeric()
                 ->step(0.000001),
         ]),
-
         Grid::make(3)->schema([
             Toggle::make('criterio_1')
                 ->label('Muestra Identificable?'),
@@ -102,6 +119,12 @@ return $form
                 ->label('Embalaje Adecuado?'),
             Toggle::make('criterio_3')
                 ->label('Cantidad Minima Requerida?'),
+        ]),
+
+        Grid::make(1)->schema([
+            Toggle::make('criterio_4')
+                ->label('Cadena de Frio para muestras de Agua?')
+                ->visible(fn (Get $get) => $get('tipo_muestra_id') == 4),
         ]),
     ]);
 
